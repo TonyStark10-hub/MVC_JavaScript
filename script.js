@@ -22,14 +22,14 @@ class Model{
       editTodo(id, updateText) {
           this.todos = this.todos.map((todo) =>
           todo.id === id ? {id:todo.id,text:updateText,complete: todo.complete}:
-          todo)
+          todo);
       }
 
        // filter a todo out of the array by id
 
        deleteTodo(id){
 
-        this.todos = this.todos.filter((todo) => todo.id != id)
+        this.todos = this.todos.filter((todo) => todo.id != id);
        }
 
        //Flip the complete boolean on the specified todo 
@@ -38,15 +38,113 @@ class Model{
 
         this.todos = this.todos.map((todo) => 
         todo.id === id ? {id=todo.id,text:todo.text,complete:!todo.complete} 
-        : todo)
+        : todo);
        }
 
-
-   
 }
 
 class View{
     constructor(){
+        //The root element
+        this.app = this.getElement('#root');
+
+        // The title of the app
+        this.title = this.createElement('h1');
+        this.title.textContent = 'Todos';
+
+        // The form , with a [type=='text'] input , and a submit button
+        this.form = this.createElement('form');
+        this.input = this.createElement('input');
+        this.input.type = 'text';
+        this.input.placeholder = 'Add todo';
+        this.input.name = 'todo';
+
+        this.submitButton = this.createElement('button');
+        this.submitButton.textContent = 'Submit';
+
+        // The visual reperesntation of todo list
+
+        this.todoList = this.createElement('ul' , 'todo-list');
+        
+        // Append the input and submit button to the form 
+
+        this.form.append(this.input,this.submitButton);
+
+        //Append the title, form, and todo list to the app
+
+        this.app.append(this.title,this.form,this.todoList)
+
+    }
+
+    get_todoText(){
+        return this.input.value;
+    }
+    
+    _resetInput(){
+        this.input.value = ''
+    }
+    // Creating element with an optional CSS classname
+    createElement(tag, classname) {
+        const element = document.createElement(tag);
+        if (classname) {
+            element.classList.add(className);
+        }
+
+        return element;
+    }
+    // Getting element from DOM by Selector
+    getElement(selector) {
+        const element = document.querySelector(selector);
+
+        return element;
+    }
+
+    displayTodos(todos) {
+       
+        while(this.todosList.firstChild) {
+
+            this.todoList.removeChild(this.todoList.firstChild);
+        }
+
+        if (todos.length === 0)  {
+            const p =this.createElement('p');
+            p.textContent = 'Nothing to do ! Add a task ?'
+            this.todoList.append(p)
+        }
+        else{
+            todos.forEach((todo) => {
+
+                const li =this.createElement('li');
+                li.id = todo.id;
+
+                const checkBox = this.createElement('input');
+                checkBox.type = 'checkbox';
+                checkBox.checked = todo.complete;
+
+                const span = this.createElement('span');
+                span.contentEditable = true ;
+                span.classList.add('editable');
+
+
+                if (todo.complete) {
+                    const strike = this.createElement('s');
+                    strike.textContent = todo.text;
+                    span.append(strike);
+
+                }else{
+                    span.textContent = todo.text;
+                }
+
+                const deleteButton = this.createElement('button' , 'delete');
+                deleteButton.textContent = 'Delete';
+
+
+                li.append(checkBox , span , deleteButton);
+
+                this.todoList.append(li)
+                
+            });
+        }
 
     }
 
